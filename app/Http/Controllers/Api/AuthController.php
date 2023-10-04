@@ -22,8 +22,11 @@ class AuthController extends Controller
             //Validated
             $validateUser = Validator::make($request->all(),
             [
-                'name' => 'required',
+                'firstname' => 'required',
+                'lastname' => 'required',
+                'gender' => 'required',
                 'email' => 'required|email|unique:users,email',
+                'phone' => 'required',
                 'password' => 'required',
                 'country' => 'required'
             ]);
@@ -37,10 +40,13 @@ class AuthController extends Controller
             }
 
             $user = User::create([
-                'name' => $request->name,
+                'firstname' => $request->firstname,
+                'lastname' => $request->lastname,
+                'gender' => $request->gender,
+                'country' => $request->country,
                 'email' => $request->email,
+                'phone' => $request->phone,
                 'password' => Hash::make($request->password),
-                'country' => $request->country
             ]);
 
             return response()->json([
