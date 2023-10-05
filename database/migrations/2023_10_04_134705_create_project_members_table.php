@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('type');
             $table->string('status');
             $table->timestamps();
+
+            $table->unique(['project_id', 'user_id']);
         });
     }
 
