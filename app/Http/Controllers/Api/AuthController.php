@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage; // Import the Storage facade
 
 class AuthController extends Controller
 {
@@ -20,18 +21,20 @@ class AuthController extends Controller
     {
         try {
             //Validated
-            $validateUser = Validator::make($request->all(),
-            [
-                'firstname' => 'required',
-                'lastname' => 'required',
-                'gender' => 'required',
-                'email' => 'required|email|unique:users,email',
-                'phone' => 'required',
-                'password' => 'required',
-                'country' => 'required'
-            ]);
+            $validateUser = Validator::make(
+                $request->all(),
+                [
+                    'firstname' => 'required',
+                    'lastname' => 'required',
+                    'gender' => 'required',
+                    'email' => 'required|email|unique:users,email',
+                    'phone' => 'required',
+                    'password' => 'required',
+                    'country' => 'required'
+                ]
+            );
 
-            if($validateUser->fails()){
+            if ($validateUser->fails()) {
                 return response()->json([
                     'status' => false,
                     'message' => 'validation error',
@@ -54,7 +57,6 @@ class AuthController extends Controller
                 'message' => 'User Created Successfully',
                 'token' => $user->createToken("API TOKEN")->plainTextToken
             ], 200);
-
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
@@ -71,13 +73,15 @@ class AuthController extends Controller
     public function loginUser(Request $request)
     {
         try {
-            $validateUser = Validator::make($request->all(),
-            [
-                'email' => 'required|email',
-                'password' => 'required'
-            ]);
+            $validateUser = Validator::make(
+                $request->all(),
+                [
+                    'email' => 'required|email',
+                    'password' => 'required'
+                ]
+            );
 
-            if($validateUser->fails()){
+            if ($validateUser->fails()) {
                 return response()->json([
                     'status' => false,
                     'message' => 'validation error',
@@ -85,7 +89,7 @@ class AuthController extends Controller
                 ], 401);
             }
 
-            if(!Auth::attempt($request->only(['email', 'password']))){
+            if (!Auth::attempt($request->only(['email', 'password']))) {
                 return response()->json([
                     'status' => false,
                     'message' => 'Email & Password does not match with our record.',
@@ -99,7 +103,80 @@ class AuthController extends Controller
                 'message' => 'User Logged In Successfully',
                 'token' => $user->createToken("API TOKEN")->plainTextToken
             ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
 
+    public function updateUser(Request $request)
+    {
+        try {
+            $user = Auth::user(); // Get the authenticated user
+
+            // Validate the update data
+            $validateUser = Validator::make($request->all(), [
+                'firstname' => 'required',
+                'lastname' => 'required',
+                'gender' => 'required',
+                'country' => 'required',
+                'phone' => 'required',
+            ]);
+
+            if ($validateUser->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validation error',
+                    'errors' => $validateUser->errors()
+                ], 401);
+            }
+
+            // Update user fields
+            $user->update([
+                'firstname' => $request->firstname,
+                'lastname' => $request->lastname,
+                'gender' => $request->gender,
+                'country' => $request->country,
+                'phone' => $request->phone,
+            ]);
+
+            // Update user password if provided
+            if (!empty($request->password)) {
+                $user->update([
+                    'password' => Hash::make($request->password),
+                ]);
+            }
+
+            // Handle photo upload (if provided in the request)
+            if ($request->hasFile('photo')) {
+                $photoPath = $request->file('photo')->store('photos', 'public'); // Store the uploaded photo
+
+                // Check if a photo record already exists for the user
+                if ($user->photos()->exists()) {
+                    // Get the existing photo record
+                    $existingPhoto = $user->photos()->first();
+
+                    // Verify that the file exists before attempting to delete it
+                    if (Storage::disk('public')->exists($existingPhoto->url)) {
+                        // Delete the existing file
+                        Storage::disk('public')->delete($existingPhoto->url);
+                    }
+
+                    // Delete the row from the photos table
+                    $existingPhoto->delete();
+                }
+
+                // Create a new photo record for the user
+                $user->photos()->create(['url' => $photoPath]);
+            }
+
+            return response()->json([
+                'status' => true,
+                'message' => 'User Profile Updated Successfully',
+                'user' => $user,
+            ], 200);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,

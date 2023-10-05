@@ -9,5 +9,10 @@ class Project extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'description'];
+    protected $fillable = ['name', 'description', 'content'];
+
+    public function photos()
+    {
+        return $this->morphMany(Photo::class, 'photoable');
+    }
 }
