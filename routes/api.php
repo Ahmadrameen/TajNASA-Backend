@@ -16,7 +16,7 @@ Route::get('/countries', [CountryController::class, 'index']);
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
-        return $request->user();
+        return $request->user()->load('photos');
     });
 
     // Protected Projects resource with 'index' method excluded
