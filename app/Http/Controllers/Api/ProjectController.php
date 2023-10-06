@@ -47,10 +47,16 @@ class ProjectController extends Controller
 
     public function show(Project $project)
     {
+        // Check if the user is an admin for the project
+        $isAdmin = $project->isAdmin(auth()->user()->id)->exists();
+
         return response()->json([
             'status' => true,
             'message' => 'Project Fetched Successfully',
-            'data' => $project->load('photos'),
+            'data' => [
+                'project' => $project->load('photos'),
+                'is_admin' => $isAdmin,
+            ],
         ], 200);
     }
 
