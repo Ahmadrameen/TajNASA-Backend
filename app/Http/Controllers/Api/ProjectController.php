@@ -13,7 +13,7 @@ class ProjectController extends Controller
 {
     public function index()
     {
-        $projects = Project::with('photos')->get();
+        $projects = Project::with('photos')->withCount('members')->get();
 
         return response()->json([
             'status' => true,
