@@ -36,4 +36,9 @@ class User extends Authenticatable
     {
         return $this->morphMany(Photo::class, 'photoable');
     }
+
+    public function projects()
+    {
+        return $this->hasMany(ProjectMember::class);
+    }
 }

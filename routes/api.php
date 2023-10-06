@@ -21,8 +21,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Protected Projects resource with 'index' method excluded
     Route::apiResource('/projects', ProjectController::class)->except('index');
+    Route::get('/my-projects', [ProjectController::class, 'myProjects']);
+
     Route::get('/project-members/{project_id}/{member_id}', [ProjectMemberController::class, 'getMemberByProjectIdAndMemberId']);
     Route::get('/project-members/{project_id}', [ProjectMemberController::class, 'index']);
-    Route::put('/updateUser', [AuthController::class, 'updateUser']);
     Route::apiResource('/project-members', ProjectMemberController::class)->except('index');
+
+    Route::put('/updateUser', [AuthController::class, 'updateUser']);
 });

@@ -104,4 +104,15 @@ class ProjectController extends Controller
             'message' => 'Project deleted successfully',
         ]);
     }
+
+    public function myProjects()
+    {
+        $projects = auth()->user()->projects()->with('photos')->get();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Projects Fetched Successfully',
+            'data' => $projects
+        ], 200);
+    }
 }

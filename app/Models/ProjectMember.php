@@ -20,4 +20,9 @@ class ProjectMember extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function photos()
+    {
+        return $this->morphMany(Photo::class, 'photoable');
+    }
 }
