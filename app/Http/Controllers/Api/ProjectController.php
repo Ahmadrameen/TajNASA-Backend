@@ -39,6 +39,13 @@ class ProjectController extends Controller
             $project->photos()->create(['url' => $photoPath]);
         }
 
+        //save it to project_members too
+        $project->members()->create([
+            'user_id' => auth()->user()->id,
+            'type' => 1,
+            'status' => 1,
+        ]);
+
         return response()->json([
             'message' => 'Project created successfully',
             'data' => new ProjectResource($project),
