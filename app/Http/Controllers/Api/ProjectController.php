@@ -14,7 +14,7 @@ class ProjectController extends Controller
 {
     public function index()
     {
-        $projects = Project::with('photos')->withCount('members')->get();
+        $projects = Project::with('photos')->withCount('members')->paginate('10');
 
         return response()->json([
             'status' => true,
