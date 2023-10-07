@@ -6,12 +6,14 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CountryController;
 use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\ProjectMemberController;
+use App\Http\Controllers\Api\TagController;
 
 // Public routes
 Route::post('/auth/signup', [AuthController::class, 'createUser']);
 Route::post('/auth/login', [AuthController::class, 'loginUser']);
 Route::get('/projects', [ProjectController::class, 'index']);
 Route::get('/countries', [CountryController::class, 'index']);
+Route::get('/tags', [TagController::class, 'index']);
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
