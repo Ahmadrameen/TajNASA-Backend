@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\TagController;
 Route::post('/auth/signup', [AuthController::class, 'createUser']);
 Route::post('/auth/login', [AuthController::class, 'loginUser']);
 Route::get('/projects', [ProjectController::class, 'index']);
+Route::get('/projects-search', [ProjectController::class, 'search']);
 Route::get('/countries', [CountryController::class, 'index']);
 Route::get('/tags', [TagController::class, 'index']);
 

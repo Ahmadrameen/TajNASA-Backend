@@ -140,4 +140,20 @@ class ProjectController extends Controller
             'data' => $projects
         ], 200);
     }
+
+    //project search by name and description
+    public function search()
+    {
+        $search = $_GET['q'];
+        $projects = Project::where('name', 'like', '%' . $search . '%')
+            ->orWhere('description', 'like', '%' . $search . '%')
+            ->with('photos')
+            ->get();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Projects Fetched Successfully',
+            'data' => $projects
+        ], 200);
+    }
 }
