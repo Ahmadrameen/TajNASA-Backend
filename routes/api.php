@@ -9,6 +9,8 @@ use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\ProjectMemberController;
 use App\Http\Controllers\Api\TagController;
 use App\Http\Controllers\Api\ExperienceController;
+use App\Http\Controllers\Api\ForumController;
+use App\Http\Controllers\Api\PostController;
 
 // Public routes
 Route::post('/auth/signup', [AuthController::class, 'createUser']);
@@ -38,4 +40,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('educations', EducationController::class);
     Route::apiResource('experiences', ExperienceController::class);
 
+    // Forums Routes
+    Route::resource('forums', ForumController::class);
+
+    // Posts Routes
+    Route::resource('posts', PostController::class);
 });
