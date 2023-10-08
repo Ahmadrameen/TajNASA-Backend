@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage; // Import the Storage facade
+use Intervention\Image\Facades\Image;
 
 class AuthController extends Controller
 {
@@ -167,6 +168,11 @@ class AuthController extends Controller
                     // Delete the row from the photos table
                     $existingPhoto->delete();
                 }
+
+                // Crop and resize the uploaded photo to 200x200 pixels
+                $image = Image::make(storage_path("app/public/$photoPath"));
+                $image->fit(200, 200);
+                $image->save();
 
                 // Create a new photo record for the user
                 $user->photos()->create(['url' => $photoPath]);

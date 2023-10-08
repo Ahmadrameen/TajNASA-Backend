@@ -130,7 +130,11 @@ class ProjectController extends Controller
 
     public function myProjects()
     {
-        $projects = auth()->user()->projects()->with('photos')->get();
+        $user = auth()->user(); // Assuming you have user authentication
+        // $projects = auth()->user()->projects()->with('photos')->with('tags')->get();
+        $projects = Project::with('photos')->withCount('members')->with('tags')->whereHas('members', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->paginate('10');
 
         return response()->json([
             'status' => true,
