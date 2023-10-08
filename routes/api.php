@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\EducationController;
 use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\ProjectMemberController;
 use App\Http\Controllers\Api\TagController;
+use App\Http\Controllers\Api\ExperienceController;
 
 // Public routes
 Route::post('/auth/signup', [AuthController::class, 'createUser']);
@@ -33,6 +34,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::put('/updateUser', [AuthController::class, 'updateUser']);
 
-    // User education routes
+    // User routes
     Route::apiResource('educations', EducationController::class);
+    Route::apiResource('experiences', ExperienceController::class);
+
 });
