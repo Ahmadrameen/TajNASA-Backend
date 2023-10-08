@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ProjectResource;
 use App\Models\Project;
 use App\Models\ProjectTag;
 use Illuminate\Http\Request;
@@ -14,7 +13,7 @@ class ProjectController extends Controller
 {
     public function index()
     {
-        $projects = Project::with('photos')->withCount('members')->paginate('10');
+        $projects = Project::with('photos')->withCount('members')->with('tags')->paginate('10');
 
         return response()->json([
             'status' => true,
@@ -29,7 +28,7 @@ class ProjectController extends Controller
             'name'        => 'required|max:255',
             'description' => 'required',
             'content'     => 'required',
-            'tags'        => 'required|array', // Change 'tags' validation to an array
+            'tags'        => 'required', // Change 'tags' validation to an array
             'tags.*'      => 'string', // Validate each tag as a string
             'photo'       => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
         ]);
@@ -38,7 +37,7 @@ class ProjectController extends Controller
         $project = Project::create($validatedData);
 
         // Attach tags to the project
-        $tags = $request->input('tags');
+        $tags = json_decode($request->input('tags'));
 
         foreach ($tags as $tag) {
             ProjectTag::create(['tag_id' => $tag, 'project_id' => $project->id]);
@@ -82,7 +81,7 @@ class ProjectController extends Controller
             'name'        => 'required|max:255',
             'description' => 'required',
             'content'     => 'required',
-            'tags'        => 'required|array', // Change 'tags' validation to an array
+            'tags'        => 'required', // Change 'tags' validation to an array
             'tags.*'      => 'string', // Validate each tag as a string
             'photo'       => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048', // Add photo validation rules
         ]);
@@ -103,7 +102,7 @@ class ProjectController extends Controller
         }
 
         // Attach tags to the project
-        $tags = $request->input('tags');
+        $tags = json_decode($request->input('tags'));
 
         foreach ($tags as $tag) {
             ProjectTag::firstOrCreate(['tag_id' => $tag, 'project_id' => $project->id]);
@@ -111,7 +110,6 @@ class ProjectController extends Controller
 
         return response()->json([
             'message' => 'Project updated successfully',
-            'data' => new ProjectResource($project),
         ]);
     }
 
