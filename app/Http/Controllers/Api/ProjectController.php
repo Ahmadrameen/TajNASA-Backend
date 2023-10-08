@@ -13,7 +13,15 @@ class ProjectController extends Controller
 {
     public function index()
     {
-        $projects = Project::with('photos')->withCount('members')->with('tags')->paginate('10');
+        if (isset($_GET['q'])) {
+            $search = $_GET['q'];
+            $projects = Project::where('name', 'like', '%' . $search . '%')
+                ->orWhere('description', 'like', '%' . $search . '%')
+                ->with('photos')
+                ->paginate(10);
+        } else {
+            $projects = Project::with('photos')->withCount('members')->with('tags')->paginate('10');
+        }
 
         return response()->json([
             'status' => true,
@@ -132,22 +140,6 @@ class ProjectController extends Controller
         $projects = Project::with('photos')->withCount('members')->with('tags')->whereHas('members', function ($query) use ($user) {
             $query->where('user_id', $user->id);
         })->paginate('10');
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Projects Fetched Successfully',
-            'data' => $projects
-        ], 200);
-    }
-
-    //project search by name and description
-    public function search()
-    {
-        $search = $_GET['q'];
-        $projects = Project::where('name', 'like', '%' . $search . '%')
-            ->orWhere('description', 'like', '%' . $search . '%')
-            ->with('photos')
-            ->get();
 
         return response()->json([
             'status' => true,

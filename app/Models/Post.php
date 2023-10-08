@@ -17,4 +17,11 @@ class Post extends Model
     {
         return $this->belongsTo(Forum::class);
     }
+
+    public function scopeWhereUserIsMemberOfProject($query, $user_id)
+    {
+        return $query->whereHas('forum.project.members', function ($query) use ($user_id) {
+            $query->where('user_id', $user_id);
+        });
+    }
 }

@@ -48,4 +48,16 @@ class PostController extends Controller
         $post->delete();
         return response()->json(['message' => 'Successfully completed'], 200);
     }
+
+    public function search()
+    {
+        $data = $_GET['q'];
+        $user_id = auth()->user()->id; // Assuming you have authentication set up
+
+        $posts = Post::where('content', 'LIKE', '%' . $data . '%')
+            ->whereUserIsMemberOfProject($user_id)
+            ->get();
+
+        return response()->json(['message' => 'Successfully completed', 'posts' => $posts], 200);
+    }
 }

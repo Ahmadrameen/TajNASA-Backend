@@ -11,14 +11,17 @@ use App\Http\Controllers\Api\TagController;
 use App\Http\Controllers\Api\ExperienceController;
 use App\Http\Controllers\Api\ForumController;
 use App\Http\Controllers\Api\PostController;
+use App\Models\Forum;
 
 // Public routes
 Route::post('/auth/signup', [AuthController::class, 'createUser']);
 Route::post('/auth/login', [AuthController::class, 'loginUser']);
 Route::get('/projects', [ProjectController::class, 'index']);
-Route::get('/projects-search', [ProjectController::class, 'search']);
 Route::get('/countries', [CountryController::class, 'index']);
 Route::get('/tags', [TagController::class, 'index']);
+
+// Search routes
+Route::get('/projects-search', [ProjectController::class, 'search']);
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
@@ -42,7 +45,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Forums Routes
     Route::resource('forums', ForumController::class);
+    Route::get('/forums-search', [ForumController::class, 'search']);
 
     // Posts Routes
     Route::resource('posts', PostController::class);
+    Route::get('/posts-search', [PostController::class, 'search']);
 });

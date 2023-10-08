@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Forum;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ForumController extends Controller
 {
@@ -26,7 +27,7 @@ class ForumController extends Controller
             'project_id' => 'required'
         ]);
 
-        $forum = Forum::create($data);
+        Forum::create($data);
         return response()->json(['message' => 'Forum saved!'], 201);
     }
 
@@ -45,5 +46,19 @@ class ForumController extends Controller
     {
         $forum->delete();
         return response()->json(['message' => 'Forum deleted!'], 200);
+    }
+
+    public function search()
+    {
+        $search_query = $_GET['q'];
+        $project_id = $_GET['p'];
+
+        $user_id = auth()->user()->id;
+
+        $forums = Forum::where('name', 'LIKE', '%' . $search_query . '%')->where('project_id', $project_id)
+            ->whereUserIsMember($user_id)
+            ->get();
+
+        return response()->json(['message' => 'Successfully completed', 'forums' => $forums], 200);
     }
 }
