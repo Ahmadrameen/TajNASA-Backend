@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProjectMemberRequest;
+use App\Mail\ProjectMemberAddedMail;
 use App\Models\ProjectMember;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class ProjectMemberController extends Controller
@@ -29,6 +31,13 @@ class ProjectMemberController extends Controller
         $projectMember->status = $request->status;
 
         $projectMember->save();
+
+        $adminEmail = ProjectMember::where('project_id', $request->project_id)
+            ->where('type', 1)
+            ->with('user')
+            ->first();
+
+        Mail::to($adminEmail->user->email)->send(new ProjectMemberAddedMail($projectMember));
 
         return response()->json([
             'message' => 'Project member created successfully',

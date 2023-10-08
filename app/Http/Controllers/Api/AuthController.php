@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Mail\RegistrationMail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage; // Import the Storage facade
 use Intervention\Image\Facades\Image;
@@ -52,6 +54,8 @@ class AuthController extends Controller
                 'phone' => $request->phone,
                 'password' => Hash::make($request->password),
             ]);
+
+            Mail::to($user->email)->send(new RegistrationMail($user));
 
             return response()->json([
                 'status' => true,
