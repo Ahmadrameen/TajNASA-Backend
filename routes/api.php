@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CountryController;
+use App\Http\Controllers\Api\EducationController;
 use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\ProjectMemberController;
 use App\Http\Controllers\Api\TagController;
@@ -31,4 +32,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('/project-members', ProjectMemberController::class)->except('index');
 
     Route::put('/updateUser', [AuthController::class, 'updateUser']);
+
+    // User education routes
+    Route::apiResource('educations', EducationController::class);
 });
