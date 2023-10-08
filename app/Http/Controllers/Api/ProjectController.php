@@ -28,15 +28,13 @@ class ProjectController extends Controller
             'name'        => 'required|max:255',
             'description' => 'required',
             'content'     => 'required',
-            'tags'        => 'required', // Change 'tags' validation to an array
-            'tags.*'      => 'string', // Validate each tag as a string
+            'tags'        => 'required',
+            'tags.*'      => 'string',
             'photo'       => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
         ]);
 
-        // Create the project
         $project = Project::create($validatedData);
 
-        // Attach tags to the project
         $tags = json_decode($request->input('tags'));
 
         foreach ($tags as $tag) {
@@ -62,14 +60,13 @@ class ProjectController extends Controller
 
     public function show(Project $project)
     {
-        // Check if the user is an admin for the project
         $isAdmin = $project->isAdmin(auth()->user()->id)->exists();
 
         return response()->json([
             'status' => true,
             'message' => 'Project Fetched Successfully',
             'data' => [
-                'project' => $project->load('photos'),
+                'project' => $project->load('photos')->load('tags')->load('members'),
                 'is_admin' => $isAdmin,
             ],
         ], 200);
@@ -81,8 +78,8 @@ class ProjectController extends Controller
             'name'        => 'required|max:255',
             'description' => 'required',
             'content'     => 'required',
-            'tags'        => 'required', // Change 'tags' validation to an array
-            'tags.*'      => 'string', // Validate each tag as a string
+            'tags'        => 'required',
+            'tags.*'      => 'string',
             'photo'       => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048', // Add photo validation rules
         ]);
 
