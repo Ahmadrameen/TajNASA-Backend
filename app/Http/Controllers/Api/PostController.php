@@ -52,7 +52,7 @@ class PostController extends Controller
     public function search()
     {
         $data = $_GET['q'];
-        $user_id = auth()->user()->id; // Assuming you have authentication set up
+        $user_id = auth()->user()->id;
 
         $posts = Post::where('content', 'LIKE', '%' . $data . '%')
             ->whereUserIsMemberOfProject($user_id)

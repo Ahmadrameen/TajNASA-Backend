@@ -18,6 +18,8 @@ class ProjectController extends Controller
             $projects = Project::where('name', 'like', '%' . $search . '%')
                 ->orWhere('description', 'like', '%' . $search . '%')
                 ->with('photos')
+                ->withCount('members')
+                ->with('tags')
                 ->paginate(10);
         } else {
             $projects = Project::with('photos')->withCount('members')->with('tags')->paginate('10');
@@ -135,8 +137,7 @@ class ProjectController extends Controller
 
     public function myProjects()
     {
-        $user = auth()->user(); // Assuming you have user authentication
-        // $projects = auth()->user()->projects()->with('photos')->with('tags')->get();
+        $user = auth()->user();
         $projects = Project::with('photos')->withCount('members')->with('tags')->whereHas('members', function ($query) use ($user) {
             $query->where('user_id', $user->id);
         })->paginate('10');
