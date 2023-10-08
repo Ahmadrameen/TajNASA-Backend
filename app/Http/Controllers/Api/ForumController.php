@@ -11,7 +11,20 @@ class ForumController extends Controller
 {
     public function index()
     {
-        $forums = Forum::all();
+        if (isset($_GET['q'])) {
+            $search_query = $_GET['q'];
+            $project_id = $_GET['p'];
+
+            $user_id = auth()->user()->id;
+
+            $forums = Forum::where('name', 'LIKE', '%' . $search_query . '%')
+                ->where('project_id', $project_id)
+                ->whereUserIsMember($user_id)
+                ->paginate(10);
+        } else {
+            $forums = Forum::paginate(10);
+        }
+
         return response()->json(['message' => 'Forums fetched!', 'data' => $forums], 200);
     }
 
@@ -46,19 +59,5 @@ class ForumController extends Controller
     {
         $forum->delete();
         return response()->json(['message' => 'Forum deleted!'], 200);
-    }
-
-    public function search()
-    {
-        $search_query = $_GET['q'];
-        $project_id = $_GET['p'];
-
-        $user_id = auth()->user()->id;
-
-        $forums = Forum::where('name', 'LIKE', '%' . $search_query . '%')->where('project_id', $project_id)
-            ->whereUserIsMember($user_id)
-            ->get();
-
-        return response()->json(['message' => 'Successfully completed', 'forums' => $forums], 200);
     }
 }

@@ -10,7 +10,19 @@ class PostController extends Controller
 {
     public function index()
     {
-        $posts = Post::all();
+        if (isset($_GET['q'])) {
+            $search_query = $_GET['q'];
+            $forum_id = $_GET['f'];
+            $user_id = auth()->user()->id;
+
+            $posts = Post::where('content', 'LIKE', '%' . $search_query . '%')
+                ->where('forum_id', $forum_id)
+                ->whereUserIsMemberOfProject($user_id)
+                ->paginate(10);
+        } else {
+            $posts = Post::paginate(10);
+        }
+
         return response()->json(['message' => 'Successfully completed', 'posts' => $posts], 200);
     }
 
@@ -47,17 +59,5 @@ class PostController extends Controller
     {
         $post->delete();
         return response()->json(['message' => 'Successfully completed'], 200);
-    }
-
-    public function search()
-    {
-        $data = $_GET['q'];
-        $user_id = auth()->user()->id;
-
-        $posts = Post::where('content', 'LIKE', '%' . $data . '%')
-            ->whereUserIsMemberOfProject($user_id)
-            ->get();
-
-        return response()->json(['message' => 'Successfully completed', 'posts' => $posts], 200);
     }
 }
