@@ -66,7 +66,7 @@ class ProjectController extends Controller
             'status' => true,
             'message' => 'Project Fetched Successfully',
             'data' => [
-                'project' => $project->load('photos')->load('tags')->load('members'),
+                'project' => $project->load('photos')->load('tags')->load('members.user'),
                 'is_admin' => $isAdmin,
             ],
         ], 200);
